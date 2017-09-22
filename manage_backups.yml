@@ -1,0 +1,84 @@
+---
+- hosts: "{{ user_hosts }}"
+  connection: local
+  
+  vars:
+     playbookname: manage_backups.yml
+     destination_dir: "configs_{{ today_yyyymmdd.stdout }}/"
+     lastweek_dir: "configs_{{ date_one_week_ago.stdout }}/"
+     fourmonths_dir: "configs_{{ date_four_months_ago.stdout }}/"
+     fiveweeks_dir: "configs_{{ date_five_weeks_ago.stdout }}/"
+     username: -User w/broad access to infrastructure
+     password: -*******- replace with password
+     cli:
+      host:  "{{ ansible_host }}"
+      username: "{{ username }}"
+      password: "{{ password }}"
+      authorize: yes
+      transport: cli
+
+  tasks:
+     - name: Get YYYYMMDD, today
+       shell: "date +%Y%m%d"
+       register: today_yyyymmdd
+       run_once: true
+
+     - name: Get DD, today
+       shell: "date +%d"
+       register: today_dd
+       run_once: true
+
+     - name: Get YYYYMMDD, 4 months ago
+       shell: "date --date='4 months ago' +%Y%m%d"
+       register: date_four_months_ago
+       run_once: true
+
+     - name: Get YYYYMMDD, 7 days ago
+       shell: "date --date='1 week ago' +%Y%m%d"
+       register: date_one_week_ago
+       run_once: true
+
+     - name: Get YYYYMMDD, 5 weeks ago
+       shell: "date --date='5 weeks ago' +%Y%m%d"
+       register: date_five_weeks_ago
+       run_once: true
+
+     - name: Get today's day of week
+       shell: "date +%a"
+       register: day_of_week
+       run_once: true
+
+     - ios_facts:
+        gather_subset: "config"
+        provider: "{{ cli }}"
+
+     - name: Create backup directory
+       run_once: true
+       file:
+        path: "{{ destination_dir }}/"
+        state: directory
+        mode: 0755
+
+     - name: Create daily backup
+       local_action: copy content="{{ ansible_net_config }}" dest="{{ destination_dir }}/{{ inventory_hostname }}_{{ today_yyyymmdd.stdout }}.config"
+
+     - name: If today's DD is not 08 AND if today is not Sunday, Delete the backup made 7 days ago
+       file:
+        state: absent
+        path: "{{ lastweek_dir }}/{{ inventory_hostname }}_{{ date_one_week_ago.stdout }}.config"
+       when:
+        - day_of_week.stdout != "Sun"
+        - today_dd.stdout != "08"
+
+     - name: If today's DD is 01, Delete the backup made 4 months ago
+       file:
+        state: absent
+        path: "{{ fourmonths_dir }}/{{ inventory_hostname }}_{{ date_four_months_ago.stdout }}.config"
+       when: today_dd.stdout == "01"
+
+     - name: If today is Sunday, Delete the backup made 5 weeks ago
+       file:
+        state: absent
+        path: "{{ fiveweeks_dir }}/{{ inventory_hostname }}_{{ date_five_weeks_ago.stdout }}.config"
+       when: day_of_week.stdout == "Sun"
+        
