@@ -1,7 +1,7 @@
 # ansible
 We have begun our Ansible journey and beleive some of the code is mature enough to share for consumption by others. By contributing the solution for a broader community we hope to pay forward assitance maturing the code. 
 
-It is a significant pivot from traditional deployments using commercial vendor tools and siloed custom scripts not availble nor compatible globally. Keep in mind we are still crawling but first steps are on their way. This is an attempt at that. Hoping to get some candid feedback but please no trolls!
+It is a significant pivot from traditional deployments using commercial vendor tools and siloed custom scripts not availble nor compatible globally. Keep in mind we are still crawling but first steps are on their way! Hoping to get some candid feedback and contributinos but please no trolls!
 
 The first solution presented is a backup manager. It combines both Python and Ansible to collect cofigurations on a schedule, analyze differences in configurations, write differences into a .diff file, and send email for hosts where changes were observed. 
 
