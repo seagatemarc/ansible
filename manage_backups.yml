@@ -8,7 +8,7 @@
      lastweek_dir: "configs_{{ date_one_week_ago.stdout }}/"
      fourmonths_dir: "configs_{{ date_four_months_ago.stdout }}/"
      fiveweeks_dir: "configs_{{ date_five_weeks_ago.stdout }}/"
-     username: -User w/broad access to infrastructure
+     username: -User replace with user having broad read access to infrastructure
      password: -*******- replace with password
      cli:
       host:  "{{ ansible_host }}"
