@@ -304,10 +304,6 @@ for host in host_dictionary['[' + section + ']']:
                         difference_deleted = True           # notify that the difference is deleted
                         has_ntp = True                      # note that NTP was involved
 
-                    elif '435720' in line:
-                        output_list.remove(difference)      # remove the line
-                        difference_deleted = True           # notify that the difference is deleted
-
         # output = diff_identifier.join(output_list)          # join the non-automagic stuff back together
 
         # if there are still differences after removing the automagically generated lines, create a .diff file. Use
